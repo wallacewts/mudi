@@ -94,4 +94,8 @@ public class Pedido {
   public void setStatus(StatusPedido status) {
     this.status = status;
   }
+
+  public void setUser(User user) {
+    this.user = user;
+  }
 }
