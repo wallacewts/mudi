@@ -23,8 +23,8 @@ public class HomeController {
   private PedidoRepository pedidoRepository;
 
   @GetMapping
-  public String hello(Model model, Principal principal) {
-    List<Pedido> pedidos = pedidoRepository.findAllByUsuario(principal.getName());
+  public String home(Model model) {
+    List<Pedido> pedidos = pedidoRepository.findAll();
     model.addAttribute("pedidos", pedidos);
 
     return "home";
