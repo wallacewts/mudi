@@ -37,7 +37,11 @@
                     class="form-control"
                     type="text"
                     v-model="pedido.valorNegociado"
+                    v-bind:class="{'is-invalid': pedido.erros.valor}"
                   />
+                  <div v-if="pedido.erros.valor" class="invalid-feedback">
+                    {{ pedido.erros.valor }}
+                  </div>
                 </div>
                 <div class="col-md-7">
                   Data da entrega:
@@ -45,7 +49,11 @@
                     class="form-control"
                     type="text"
                     v-model="pedido.dataEntrega"
+                    v-bind:class="{'is-invalid': pedido.erros.dataEntrega}"
                   />
+                  <div v-if="pedido.erros.dataEntrega" class="invalid-feedback">
+                    {{ pedido.erros.dataEntrega }}
+                  </div>
                 </div>
               </div>
               <div>
@@ -93,12 +101,20 @@
                 const pedidosMapeados = response.data.map((pedido) => ({
                   ...pedido,
                   ofertaEnviada: false,
+                  erros: {
+                    valor: "",
+                    dataEntrega: "",
+                  },
                 }));
                 this.pedidos = pedidosMapeados;
               });
           },
           methods: {
             enviarOferta(pedido) {
+              pedido.erros = {
+                valor: "",
+                dataEntrega: "",
+              };
               axios
                 .post("http://localhost:8080/api/ofertas", {
                   pedidoId: pedido.id,
@@ -106,7 +122,12 @@
                   dataEntrega: pedido.dataEntrega,
                   comentario: pedido.comentario,
                 })
-                .then((response) => (pedido.ofertaEnviada = true));
+                .then((response) => (pedido.ofertaEnviada = true))
+                .catch((error) => {
+                  error.response.data.errors.forEach((erro) => {
+                    pedido.erros[erro.field] = erro.defaultMessage;
+                  });
+                });
             },
           },
         });
